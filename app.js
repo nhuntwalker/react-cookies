@@ -1,6 +1,6 @@
-var hours = ['6am', '7am', '8am', '9am', '10am',
-             '11am', '12pm', '1pm', '2pm', '3pm',
-             '4pm', '5pm', '6pm', '7pm'];
+'use strict';
+
+const HOURS = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm'];
 
 var storeNames = ['1st and Pike', 'SeaTac Airport', 'Seattle Center', 'Capitol Hill', 'Alki'];
 var storeIds = ['first-pike', 'sea-tac', 'sea-center', 'cap-hill', 'alki'];
@@ -23,7 +23,7 @@ function Store(name, id, minCust, maxCust, avgCookies) {
   var calcCookieSales = () => {
     sales = [];
     this.total = 0;
-    for (var i = 0; i < hours.length; i ++) {
+    for (var i = 0; i < HOURS.length; i ++) {
       hourlySale = Math.floor(calcRandomCust() * this.avgCookies)
       sales.push(hourlySale);
       this.total += hourlySale;
@@ -53,8 +53,8 @@ var NewSection = React.createClass({
 var NewUl = React.createClass({
   render() {
     var listItems = [];
-    for (var i = 0; i < hours.length; i++) {
-      listItems.push(<ListItem data={ hours[i] } sale={ this.props.sales[i] } key={ hours[i] }/>);
+    for (var i = 0; i < HOURS.length; i++) {
+      listItems.push(<ListItem data={ HOURS[i] } sale={ this.props.sales[i] } key={ HOURS[i] }/>);
     };
     listItems.push(<ListItem data='Total' sale={ this.props.total } key='total'/>)
     return (<ul>
