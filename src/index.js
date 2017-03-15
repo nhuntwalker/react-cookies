@@ -10,5 +10,3 @@ for (var i = 0; i < 5; i++) {
   var store = new Store(storeNames[i], storeIds[i], minCusts[i], maxCusts[i], avgCookies[i]);
   store.renderHTML();
 }
-
-// ReactDOM.render(<App />, document.body);
