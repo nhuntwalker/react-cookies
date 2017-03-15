@@ -9,56 +9,81 @@ function Store(name, id, minCust, maxCust, avgCookies) {
   this.minCust = minCust;
   this.maxCust = maxCust;
   this.avgCookies = avgCookies;
-  var sales;
+  this.sales;
   var calcRandomCust = () => {
     return Math.random() * (this.maxCust - this.minCust + 1) + this.minCust;
   };
   var calcCookieSales = () => {
-    sales = [];
+    this.sales = [];
     this.total = 0;
     for (var i = 0; i < HOURS.length; i ++) {
       let hourlySale = Math.floor(calcRandomCust() * this.avgCookies)
-      sales.push(hourlySale);
+      this.sales.push(hourlySale);
       this.total += hourlySale;
     }
   };
-  this.renderHTML = () => {
+  // this.renderHTML = () => {
+  //   calcCookieSales();
+  //   var newDiv = document.createElement('div');
+  //   newDiv.id = this.id;
+  //   document.body.appendChild(newDiv);
+  //   ReactDOM.render(<NewSection sales={ sales } title={ this.name } total={ this.total }/>, newDiv); 
+  // };
+  this.createTableRow = () => {
     calcCookieSales();
-    var newDiv = document.createElement('div');
-    newDiv.id = this.id;
-    document.body.appendChild(newDiv);
-    ReactDOM.render(<NewSection sales={ sales } title={ this.name } total={ this.total }/>, newDiv); 
+    let tds = [<td>{ this.name }</td>];
+    this.sales.map((sale) => {
+      tds.push(<td>{ sale }</td>);
+    });
+    tds.push(<td>{ this.total }</td>)
+    return (
+      <tr>{ tds }</tr>
+    );
   };
 };
 
-
-var NewSection = React.createClass({
+var HeadRow = React.createClass({
   render() {
+    let rowData = [<th>Location</th>];
+    HOURS.map(( hour ) => { rowData.push(<th>{ hour }</th>) });
+    rowData.push(<th>Totals</th>);
+    return (<tr>{ rowData }</tr>);
+  }
+});
+
+var TotalsRow = React.createClass({
+  render() {
+    let rowData = [<th>Hourly Totals</th>];
+    this.props.totals.map((amt) => { rowData.push(<td>{ amt }</td>) });
+    return (<tr>{ rowData }</tr>);
+  }
+});
+
+var Table = React.createClass({
+  render(){
+    let storeRows = [];
+    let totals = HOURS.map((hour) => { return 0 });
+    totals.push(0)
+    for (var i = 0; i < this.props.names.length; i++) {
+      let store = new Store(this.props.names[i],
+                            this.props.ids[i],
+                            this.props.minCusts[i],
+                            this.props.maxCusts[i],
+                            this.props.avgCookies[i]);
+      storeRows.push(store.createTableRow());
+      for (var j = 0; j < HOURS.length; j++) {
+        totals[j] += store.sales[j];
+      }
+      totals[j] += store.total;
+    }
     return (
-    <section id={ this.props.id }>
-      <h2>{ this.props.title }</h2>
-      <NewUl sales={ this.props.sales } total={ this.props.total }/>
-    </section>);
+      <table id='data-table'>
+        <HeadRow />
+        { storeRows }
+        <TotalsRow totals={ totals } />
+      </table>
+    );
   }
 });
 
-var NewUl = React.createClass({
-  render() {
-    var listItems = [];
-    for (var i = 0; i < HOURS.length; i++) {
-      listItems.push(<ListItem data={ HOURS[i] } sale={ this.props.sales[i] } key={ HOURS[i] }/>);
-    };
-    listItems.push(<ListItem data='Total' sale={ this.props.total } key='total'/>)
-    return (<ul>
-      { listItems }
-    </ul>);
-  }
-});
-
-var ListItem = React.createClass({
-  render() {
-    return (<li><strong>{ this.props.data }</strong>: { this.props.sale } cookies</li>);
-  }
-});
-
-export default Store;
+export default Table;
